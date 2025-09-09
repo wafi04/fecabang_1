@@ -1,0 +1,73 @@
+"use client";
+import { api } from "@/lib/axios";
+import { LoginFormData, RegisterFormData } from "@/shared/schemas/auth";
+import { ErrorResponse } from "@/shared/types/response";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+export function useHandleLogout() {
+  const queryClient = useQueryClient();
+  const push = useRouter();
+
+  return useMutation({
+    mutationKey: ["logout"],
+    mutationFn: async () => {
+      const response = await api.post(`/user/logout`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.clear();
+      push.push("/login");
+      toast.success("Logout Succes");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "An error occurred during logout.");
+    },
+  });
+}
+export const useRegisterMutation = () => {
+  const queryClient = useQueryClient();
+  const push = useRouter();
+  return useMutation({
+    mutationKey: ["register"],
+    mutationFn: async (data: RegisterFormData) => {
+      const res = await api.post("/auth/register", data);
+
+      return res.data;
+    },
+    onError: (err: ErrorResponse) => {
+      queryClient.cancelQueries({ queryKey: ["user"] });
+      toast.error(err.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      push.push("/login");
+    },
+  });
+};
+
+export const useLoginMutation = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationKey: ["login"],
+    mutationFn: async (data: LoginFormData) => {
+      const res = await api.post("/auth/login", data);
+      return res.data;
+    },
+    onError: (error: ErrorResponse) => {
+      const errorMessage = error.message || error.message || "Login failed";
+
+      queryClient.cancelQueries({ queryKey: ["user"] });
+      toast.error(`Error: ${errorMessage}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      toast.success("Login Success");
+
+      router.push("/");
+    },
+  });
+};
