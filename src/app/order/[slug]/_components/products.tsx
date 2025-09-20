@@ -1,13 +1,21 @@
 import { useOrder } from "@/shared/hooks/formOrder";
 import { ProductReseller } from "@/shared/types/product";
 import { FormatCurrency } from "@/shared/utils/format";
+import { toast } from "sonner";
 
 export function ProductsOrder({ products }: { products: ProductReseller[] }) {
   const calculateDiscount = (originalPrice: number, promoPrice: number) => {
     const discount = ((originalPrice - promoPrice) / originalPrice) * 100;
     return Math.round(discount);
   };
-  const { setSelectedProduct } = useOrder();
+  const { setSelectedProduct,orderSummary,formData } = useOrder();
+   const sortedProducts = [...products].sort((a, b) => {
+    const priceA = a.hargaPromo && a.hargaPromo > 0 ? a.hargaPromo : a.hargaJual;
+    const priceB = b.hargaPromo && b.hargaPromo > 0 ? b.hargaPromo : b.hargaJual;
+    return priceA - priceB; // ascending (termurah ke termahal)
+  });
+
+  
 
   return (
     <div className="space-y-3 bg-card p-4 rounded-lg border border-border">
@@ -15,7 +23,7 @@ export function ProductsOrder({ products }: { products: ProductReseller[] }) {
         Pilih Nominal
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {products.map((product) => {
+        {sortedProducts.map((product) => {
           const hasPromo = product.hargaPromo && product.hargaPromo > 0;
           const discountPercentage = hasPromo
             ? calculateDiscount(product.hargaJual, product.hargaPromo ?? 0)
@@ -25,6 +33,10 @@ export function ProductsOrder({ products }: { products: ProductReseller[] }) {
             <div
               key={product.id}
               onClick={() => {
+                if(!formData?.gameId || formData.gameId === ""){
+                  toast.error("Masukkan Akun Terlebih Dahulu")
+                  return
+                }
                setSelectedProduct({
                 id : product.id,
                 productId : product.productID,

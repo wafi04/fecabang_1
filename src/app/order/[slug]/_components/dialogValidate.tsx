@@ -12,7 +12,7 @@ interface DialogValidateTransactionsProps {
   onClose: () => void;
   transactionData?: {
     status: string;
-    referenceId: string;
+    referenceID: string;
     productName: string;
     fee: number;
     methodName: string;
@@ -85,11 +85,10 @@ export function DialogValidateTransactions({
 
   const displayData = {
     username: transactionData?.nickname || "-",
-    id: transactionData?.referenceId || "-",
-    server: getOrderSummary()?.customer.gameId || "-",
+    tujuan: transactionData?.no_tujuan || "-",
     product: getOrderSummary()?.product.name || "-",
     payment: getOrderSummary()?.paymentMethod.name || "-",
-    referenceId: transactionData?.referenceId || "-",
+    referenceId: transactionData?.referenceID || "-",
     status: transactionData?.status || "pending",
     fee: transactionData?.fee || calculation?.fee || 0,
     total: getOrderSummary()?.calculation.total || 0,
@@ -160,20 +159,11 @@ export function DialogValidateTransactions({
                     </div>
                   </>
                 )}
-
-                <div className="line-clamp-1">Username</div>
-                <div className="col-span-2 truncate">
-                  {displayData.username}
-                </div>
-
-                <div className="line-clamp-1">ID</div>
-                <div className="col-span-2 truncate">{displayData.id}</div>
-
-                {displayData.server && displayData.server !== "-" && (
+                {displayData.tujuan && displayData.tujuan !== "-" && (
                   <>
-                    <div className="line-clamp-1">Server</div>
+                    <div className="line-clamp-1">Tujuan</div>
                     <div className="col-span-2 truncate">
-                      {displayData.server}
+                      {displayData.tujuan}
                     </div>
                   </>
                 )}
@@ -210,7 +200,7 @@ export function DialogValidateTransactions({
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-secondary-foreground shadow-sm hover:bg-secondary/80 "
                     onClick={() => {
-                      push(`/invoice/${transactionData.referenceId}`);
+                      push(`/invoice/${transactionData.referenceID}`);
                     }}
                   >
                     Bayar Sekarang

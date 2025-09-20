@@ -7,16 +7,17 @@ export interface ProductReseller {
   productID: number;
   hargaJual: number;
   hargaModal: number;
-  subCategoryName: string;
-  subCategoryThumbnail: string;
-  subCategoryBanner: string;
-  subCategoryInformation: string;
+  categoryName: string;
+  categoryThumbnail: string;
+  categoryBanner: string;
+  categoryInformation: string;
   brand: string;
   typeHarga: PriceType;
   marginValue: number;
   isActive: boolean;
   productName: string;
-  hargaPromo: number | null;
+  isCheckNickname : boolean
+  hargaPromo: number
 }
 
 export interface UpdateProductReseller {

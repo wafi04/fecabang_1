@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: branch_1
+    container_name: cabang_1
     restart: always
     ports:
       - "3001:3001"

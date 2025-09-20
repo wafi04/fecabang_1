@@ -2,31 +2,25 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { ProductReseller } from "@/shared/types/product";
 import { FormatCurrency, formatDate } from "@/shared/utils/format";
-import { useState } from "react";
+import { ProductReseller } from "@/shared/types/product";
+import { useEffect } from "react";
 import { useUpdateResellerPricing } from "../hooks/useResellerPricing";
+import { useProductsStore } from "../hooks/useUpdateStore";
 
 interface TableProductsProps {
   products: ProductReseller[];
 }
 
 export function TableProducts({ products }: TableProductsProps) {
-  const [editedProducts, setEditedProducts] =
-    useState<ProductReseller[]>(products);
+  const { products: editedProducts, setProducts, updateProduct } =
+    useProductsStore();
   const { mutate, isPending } = useUpdateResellerPricing();
 
-  const handleChange = (
-    id: string,
-    field: keyof ProductReseller,
-    value: string | number | null | boolean
-  ) => {
-    setEditedProducts((prev) =>
-      prev.map((p) =>
-        `${p.productID}-${p.branchID}` === id ? { ...p, [field]: value } : p
-      )
-    );
-  };
+  // pertama kali set data ke store
+  useEffect(() => {
+    setProducts(products);
+  }, [products, setProducts]);
 
   const handleSave = (id: string, productID: number) => {
     const product = editedProducts.find(
@@ -43,25 +37,11 @@ export function TableProducts({ products }: TableProductsProps) {
     });
   };
 
-  if (products.length === 0) {
+  if (editedProducts.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="px-4 py-8 text-center">
-          <div className="text-gray-400 mb-4">
-            <svg
-              className="mx-auto h-12 w-12"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 48 48"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m6 0h6m-6 6v6m0-6h6m-6 0V6"
-              />
-            </svg>
-          </div>
+          <div className="text-gray-400 mb-4">🚀</div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             Tidak ada data produk
           </h3>
@@ -76,15 +56,13 @@ export function TableProducts({ products }: TableProductsProps) {
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Produk Reseller ({products.length})
-          </h2>
-          <div className="text-sm text-gray-500">
-            Update terakhir:{" "}
-            {formatDate(products[0]?.updated_at || new Date().toISOString())}
-          </div>
+      <div className="px-4 py-4 border-b border-gray-200 flex justify-between">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Produk Reseller ({editedProducts.length})
+        </h2>
+        <div className="text-sm text-gray-500">
+          Update terakhir:{" "}
+          {formatDate(editedProducts[0]?.updated_at || new Date().toISOString())}
         </div>
       </div>
 
@@ -96,24 +74,12 @@ export function TableProducts({ products }: TableProductsProps) {
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Produk
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Harga Modal
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Harga Jual
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Margin
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Harga Promo
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Update
-              </th>
+              <th className="px-4 py-3">Harga Modal</th>
+              <th className="px-4 py-3">Harga Jual</th>
+              <th className="px-4 py-3">Margin</th>
+              <th className="px-4 py-3">Harga Promo</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Update</th>
               <th />
             </tr>
           </thead>
@@ -122,70 +88,63 @@ export function TableProducts({ products }: TableProductsProps) {
               const id = `${product.productID}-${product.branchID}`;
               return (
                 <tr key={id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 whitespace-nowrap">
+                  {/* Nama Produk */}
+                  <td className="px-4 py-4">
                     <Input
                       value={product.productName}
                       onChange={(e) =>
-                        handleChange(id, "productName", e.target.value)
+                        updateProduct(id, "productName", e.target.value)
                       }
                     />
                   </td>
 
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {FormatCurrency(product.hargaModal)}
-                    </div>
-                  </td>
+                  {/* Harga Modal */}
+                  <td className="px-4 py-4">{FormatCurrency(product.hargaModal)}</td>
 
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    {FormatCurrency(product.hargaJual)}
-                  </td>
+                  {/* Harga Jual */}
+                  <td className="px-4 py-4">{FormatCurrency(product.hargaJual)}</td>
 
-                  <td className="w-32 p-4 whitespace-nowrap">
+                  {/* Margin */}
+                  <td className="px-4 py-4 w-32">
                     <Input
                       type="number"
-                      pattern="[0-9]*"
-                      value={product.marginValue}
+                      value={product.marginValue ?? ""}
                       onChange={(e) => {
                         const raw = e.target.value;
-                        if (/^\d*$/.test(raw)) {
-                          const value = raw === "" ? null : Number(raw);
-                          handleChange(id, "marginValue", value);
-                        }
+                        const value = raw === "" ? null : Number(raw);
+                        updateProduct(id, "marginValue", value);
                       }}
                     />
                   </td>
 
-                  <td className="w-32 p-4 whitespace-nowrap">
+                  {/* Harga Promo */}
+                  <td className="px-4 py-4 w-32">
                     <Input
-                      type="text"
-                      pattern="[0-9]*"
-                      min={product.hargaModal}
-                      value={product.hargaPromo ?? 0}
-                       onChange={(e) => {
+                      type="number"
+                      value={product.hargaPromo ?? ""}
+                      onChange={(e) => {
                         const raw = e.target.value;
-                        if (/^\d*$/.test(raw)) {
-                          const value = raw === "" ? null : Number(raw);
-                          handleChange(id, "hargaPromo", value);
-                        }
+                        const value = raw === "" ? null : Number(raw);
+                        updateProduct(id, "hargaPromo", value);
                       }}
                     />
                   </td>
 
-                  <td className="px-4 py-4 whitespace-nowrap">
+                  {/* Status */}
+                  <td className="px-4 py-4">
                     <Switch
                       checked={product.isActive}
-                      onCheckedChange={(val) =>
-                        handleChange(id, "isActive", val)
-                      }
+                      onCheckedChange={(val) => updateProduct(id, "isActive", val)}
                     />
                   </td>
 
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {/* Update Time */}
+                  <td className="px-4 py-4 text-sm text-gray-500">
                     {formatDate(product.updated_at)}
                   </td>
 
-                  <td className="px-4 py-4 whitespace-nowrap">
+                  {/* Save */}
+                  <td className="px-4 py-4">
                     <Button
                       variant="outline"
                       size="sm"

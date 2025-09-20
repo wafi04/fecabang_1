@@ -23,18 +23,16 @@ interface PaymentMethod {
 interface FormData {
   gameId: string;
   serverId?: string;
-  voucherCode?: string;
+  nickname?: string;
 }
 
 interface OrderCalculation {
   basePrice: number;
   fee: number;
-  discount: number;
   total: number;
   breakdown: {
     productPrice: number;
     paymentFee: number;
-    voucherDiscount: number;
     finalTotal: number;
   };
 }
@@ -62,7 +60,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   formData: {
     gameId: '',
     serverId: '',
-    voucherCode: '',
+    nickname : ''
   },
   selectedProduct: null,
   selectedMethod: null,
@@ -117,7 +115,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       formData: {
         gameId: '',
         serverId: '',
-        voucherCode: '',
+        nickname: '',
       },
       selectedProduct: null,
       selectedMethod: null,
@@ -158,12 +156,10 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       return {
         basePrice: 0,
         fee: 0,
-        discount: 0,
         total: 0,
         breakdown: {
           productPrice: 0,
           paymentFee: 0,
-          voucherDiscount: 0,
           finalTotal: 0,
         },
       };
@@ -173,19 +169,16 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     const fee = calculateFee(selectedMethod.fee, basePrice);
     
     // Mock voucher discount calculation (replace with real logic)
-    const discount = formData.voucherCode ? calculateVoucherDiscount(formData.voucherCode, basePrice) : 0;
     
-    const total = basePrice + fee - discount;
+    const total = basePrice + fee
 
     return {
       basePrice,
       fee,
-      discount,
       total,
       breakdown: {
         productPrice: basePrice,
         paymentFee: fee,
-        voucherDiscount: discount,
         finalTotal: total,
       },
     };
@@ -214,14 +207,14 @@ function calculateFee(feeConfig: PaymentMethod['fee'], basePrice: number): numbe
   }
 }
 
-function calculateVoucherDiscount(voucherCode: string, basePrice: number): number {
+function calculateVoucherDiscount(nickname: string, basePrice: number): number {
   // Mock voucher calculation - replace with real API call
   const vouchers: Record<string, { type: 'fixed' | 'percentage'; value: number }> = {
     'DISKON10': { type: 'percentage', value: 10 },
     'CASHBACK5000': { type: 'fixed', value: 5000 },
   };
 
-  const voucher = vouchers[voucherCode.toUpperCase()];
+  const voucher = vouchers[nickname.toUpperCase()];
   if (!voucher) return 0;
 
   if (voucher.type === 'percentage') {

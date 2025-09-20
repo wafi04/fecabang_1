@@ -23,8 +23,8 @@ export interface CreateMethodData {
   description?: string;
   type: string;
   image?: string;
-  minAmount?: number; // default 0 kalau nggak ada
-  maxAmount?: number; // default 0 kalau nggak ada
+  max_amount: number; // default 0 kalau nggak ada
+  min_amount: number; // default 0 kalau nggak ada
   fee?: number;
   feeType?: string;
   status?: string;
@@ -50,8 +50,8 @@ export type MethodResponseByType = {
   description: string | null;
   image: string
   type: "virtual-account" | "e-wallet" | "qris" | string; // bisa diperluas sesuai enum di DB
-  minAmount: number | null;
-  maxAmount: number | null;
+  max_amount: number | null;
+  min_amount: number | null;
   status: "active" | "inactive" | string;
   fee_amount: number;
   fee_percentage: number;

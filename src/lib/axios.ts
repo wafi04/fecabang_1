@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
-import { API_RESPONSE, ErrorResponse } from "@/shared/types/response";
+import { API_RESPONSE } from "./types";
 
 interface BackendResponse<T> {
   message: string;
@@ -21,14 +21,14 @@ interface RequestConfig {
 
 export class Api {
   private instance: AxiosInstance;
-  
+
   constructor() {
     this.instance = axios.create({
-      baseURL: "https://apitesting.zilog.my.id/api/v1",
+      baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
       withCredentials: true,
       headers: {
-        Branchname: "TAPAK SUCI MUALLIMIN",
-        Branchcode: "2d1dca0e-a7b4-45a0-b4cb-8cac837603ff",
+        Branchname: process.env.NEXT_PUBLIC_BRANCH_NAME,
+        Branchcode: process.env.NEXT_PUBLIC_BRANCH_CODE,
       },
     });
 
@@ -40,7 +40,7 @@ export class Api {
             data: response.data,
             status: response.status,
             message: response.data.message,
-          }
+          },
         };
       },
       async (error: AxiosError) => {
@@ -113,7 +113,7 @@ export class Api {
       const response = await this.instance.get(url, {
         headers: this.getHeaders(config),
       });
-      
+
       return response.data as API_RESPONSE<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
@@ -155,7 +155,7 @@ export class Api {
       const response = await this.instance.put(url, formattedData, {
         headers: this.getHeaders(config),
       });
-      
+
       return response.data as API_RESPONSE<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
@@ -172,7 +172,7 @@ export class Api {
       const response = await this.instance.patch(url, formattedData, {
         headers: this.getHeaders(config),
       });
-      
+
       return response.data as API_RESPONSE<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
@@ -187,17 +187,17 @@ export class Api {
       const response = await this.instance.delete(url, {
         headers: this.getHeaders(config),
       });
-      
+
       return response.data as API_RESPONSE<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
     }
   }
 
-  private handleError(error: ApiError): ApiError {    
+  private handleError(error: ApiError): ApiError {
     return {
       code: error.code || -1,
-      message: error.message || 'Unknown error occurred',
+      message: error.message || "Unknown error occurred",
       success: false,
       error: error.error || error.message,
     };

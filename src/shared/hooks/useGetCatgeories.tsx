@@ -13,7 +13,7 @@ export function useGetAllSubCategory(filters?: FilterRequest) {
       if (filters?.page) params.append("page", filters.page);
       if (filters?.search) params.append("search", filters.search);
       const data = await api.get<ApiPagination<SubCategory[]>>(
-        `/subcategory?${params.toString()}`
+        `/category?${params.toString()}`
       );
       return data.data;
     },

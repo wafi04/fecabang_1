@@ -1,4 +1,4 @@
-import { useGetAllSubCategory } from "@/shared/hooks/useGetSubCatgeories";
+import { useGetAllSubCategory } from "@/shared/hooks/useGetCatgeories";
 import Image from "next/image";
 import Link from "next/link";
 

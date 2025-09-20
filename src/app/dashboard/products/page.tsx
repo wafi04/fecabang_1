@@ -3,11 +3,17 @@ import { PaginationComponents } from "@/shared/components/filter/pagination";
 import { TableProducts } from "./_components/table";
 import { useGetResellerPricing } from "./hooks/useResellerPricing";
 import { useState, useCallback, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Package, Filter } from "lucide-react";
 
 interface Filters {
   page: number;
   limit: number;
   search?: string;
+  status?: string;
 }
 
 export default function DashboardProduct() {
@@ -15,6 +21,7 @@ export default function DashboardProduct() {
     page: 1,
     limit: 10,
     search: undefined,
+    status: "active", // Default status
   });
 
   // Debounced search to avoid too many API calls
@@ -33,39 +40,66 @@ export default function DashboardProduct() {
     if (debouncedSearch !== filters.search) {
       setFilters((prev) => ({ ...prev, page: 1 }));
     }
-  }, [debouncedSearch,filters.search]);
+  }, [debouncedSearch, filters.search]);
 
   const { data, isLoading } = useGetResellerPricing({
     page: filters.page.toString(),
     limit: filters.limit.toString(),
     search: debouncedSearch,
+    status: filters.status || "active",
   });
 
   const handlePageChange = useCallback((newPage: number) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
   }, []);
 
-  const handleLimitChange = useCallback((newLimit: number) => {
-    setFilters((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+  const handleLimitChange = useCallback((newLimit: string) => {
+    setFilters((prev) => ({ ...prev, limit: parseInt(newLimit), page: 1 }));
   }, []);
 
   const handleSearchChange = useCallback((search: string) => {
     setFilters((prev) => ({ ...prev, search }));
   }, []);
 
-  // Loading state
+  const handleStatusChange = useCallback((status: string) => {
+    setFilters((prev) => ({ ...prev, status, page: 1 }));
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setFilters({
+      page: 1,
+      limit: 10,
+      search: undefined,
+      status: "active",
+    });
+  }, []);
+
+  // Loading state with better skeleton
   if (isLoading) {
     return (
       <main className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
-          <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+          <div className="space-y-2">
+            <div className="h-8 bg-muted rounded w-48 animate-pulse"></div>
+            <div className="h-4 bg-muted rounded w-32 animate-pulse"></div>
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        
+        <div className="border rounded-lg">
+          <div className="p-4 border-b">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="h-10 bg-muted rounded flex-1 animate-pulse"></div>
+              <div className="flex gap-2">
+                <div className="h-10 bg-muted rounded w-32 animate-pulse"></div>
+                <div className="h-10 bg-muted rounded w-20 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+          
           <div className="animate-pulse">
-            <div className="h-16 bg-gray-200"></div>
+            <div className="h-12 bg-muted/50"></div>
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 bg-gray-100 border-t"></div>
+              <div key={i} className="h-16 bg-muted/20 border-t"></div>
             ))}
           </div>
         </div>
@@ -75,125 +109,165 @@ export default function DashboardProduct() {
 
   const products = data?.data?.data || [];
   const meta = data?.data?.meta;
+  const hasActiveFilters = filters.search || filters.status !== "active";
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-6 p-6 h-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Produk Reseller</h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Kelola Harga produk Reseller
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">Produk Reseller</h1>
+          <p className="text-muted-foreground">
+            Kelola harga produk reseller
           </p>
+        </div>
+        
+        {/* Status indicators */}
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-xs">
+            Total: {meta?.totalItems || 0}
+          </Badge>
+          {filters.status && (
+            <Badge 
+              variant={filters.status === "active" ? "default" : "secondary"}
+              className="text-xs"
+            >
+              {filters.status === "active" ? "Aktif" : 
+               filters.status === "inactive" ? "Tidak Aktif" : 
+               "Semua"}
+            </Badge>
+          )}
         </div>
       </div>
 
       {/* Filters */}
-      <div className=" p-4 rounded-lg shadow-sm border border-gray-200">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          {/* Search */}
-          <div className="flex-1 max-w-md">
-            <label htmlFor="search" className="sr-only">
-              Cari produk
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
-              <input
-                id="search"
-                type="text"
-                placeholder="Cari nama produk..."
-                value={filters.search}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
+      <div className="border rounded-lg bg-background">
+        <div className="p-4 border-b bg-muted/25">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Filter & Pencarian</span>
           </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Search */}
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Cari nama produk..."
+                  value={filters.search || ""}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            </div>
 
-          {/* Items per page */}
-          <div className="flex items-center gap-2">
-            <label
-              htmlFor="limit"
-              className="text-sm font-medium text-gray-700"
-            >
-              Tampilkan:
-            </label>
-            <select
-              id="limit"
-              value={filters.limit}
-              onChange={(e) => handleLimitChange(parseInt(e.target.value))}
-              className="block w-20 px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-            <span className="text-sm text-gray-700">item</span>
+            <div className="flex items-center gap-3">
+              {/* Status Filter */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Status:</span>
+                <Select value={filters.status} onValueChange={handleStatusChange}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Aktif</SelectItem>
+                    <SelectItem value="inactive">Tidak Aktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Items per page */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Show:</span>
+                <Select value={filters.limit.toString()} onValueChange={handleLimitChange}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="25">25</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Clear filters */}
+              {hasActiveFilters && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-xs"
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow">
-        {products.length > 0 ? (
-          <TableProducts products={products} />
-        ) : (
-          <div className="px-6 py-12 text-center">
-            <div className="text-gray-400 mb-4">
-              <svg
-                className="mx-auto h-16 w-16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 48 48"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m6 0h6m-6 6v6m0-6h6m-6 0V6"
-                />
-              </svg>
+        {/* Active filters indicator */}
+        {hasActiveFilters && (
+          <div className="px-4 py-2 bg-primary/5 border-b">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>Filter aktif:</span>
+              {filters.search && (
+                <Badge variant="secondary" className="text-xs">
+                  Pencarian: "{filters.search}"
+                </Badge>
+              )}
+              {filters.status !== "active" && (
+                <Badge variant="secondary" className="text-xs">
+                  Status: {filters.status === "inactive" ? "Tidak Aktif" : "Semua"}
+                </Badge>
+              )}
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {filters.search
-                ? "Produk tidak ditemukan"
-                : "Tidak ada data produk"}
-            </h3>
-            <p className="text-gray-500 mb-6">
-              {filters.search
-                ? `Tidak ada produk yang cocok dengan "${filters.search}"`
-                : "Belum ada data produk reseller yang tersedia."}
-            </p>
-            {filters.search && (
-              <button
-                onClick={() => handleSearchChange("")}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Hapus Filter
-              </button>
-            )}
           </div>
         )}
+
+        {/* Table */}
+        <div className="rounded-b-lg overflow-hidden">
+          {products.length > 0 ? (
+            <TableProducts products={products} />
+          ) : (
+            <div className="px-6 py-16 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="rounded-full bg-muted p-3">
+                  <Package className="h-8 w-8 text-muted-foreground" />
+                </div>
+              </div>
+              
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                {filters.search || filters.status !== "active"
+                  ? "Produk tidak ditemukan"
+                  : "Tidak ada data produk"}
+              </h3>
+              
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                {filters.search
+                  ? `Tidak ada produk yang cocok dengan pencarian "${filters.search}"${filters.status !== "active" ? ` dengan status ${filters.status}` : ""}.`
+                  : filters.status !== "active"
+                  ? `Tidak ada produk dengan status ${filters.status === "inactive" ? "tidak aktif" : "tersebut"}.`
+                  : "Belum ada data produk reseller yang tersedia."}
+              </p>
+              
+              {hasActiveFilters && (
+                <Button onClick={clearFilters} variant="outline">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Hapus Semua Filter
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Pagination */}
       {meta && products.length > 0 && (
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-2 ">
           <PaginationComponents
             onPageChange={handlePageChange}
             pagination={meta}

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useOrderStore } from "./useSelectProductAndMethod";
-import { TransactionResponse, useCreateTransactions } from "@/_transactions/hooks/api";
-
+import {
+  TransactionResponse,
+  useCreateTransactions,
+} from "@/_transactions/hooks/api";
 
 export function useOrder() {
   const { mutate, isPending } = useCreateTransactions();
@@ -32,12 +34,9 @@ export function useOrder() {
       mutate(
         {
           noTujuan,
-        ID : selectedProduct.id,
+          ID: selectedProduct.id,
           paymentMethod: selectedMethod.code,
           productId: selectedProduct.productId,
-          ...(formData.voucherCode && {
-            voucherCode: formData.voucherCode.trim().toUpperCase(),
-          }),
         },
         {
           onSuccess: (data) => {
@@ -77,7 +76,7 @@ export function useOrder() {
   const getOrderSummary = () => {
     const { selectedProduct, selectedMethod } = store;
     const calculation = store.getCalculation();
-    
+
     if (!selectedProduct || !selectedMethod) {
       return null;
     }
@@ -93,10 +92,6 @@ export function useOrder() {
           ? `${store.formData.gameId.trim()}${store.formData.serverId.trim()}`
           : store.formData.gameId.trim(),
       },
-      voucher: store.formData.voucherCode ? {
-        code: store.formData.voucherCode.trim().toUpperCase(),
-        discount: calculation.discount
-      } : null,
     };
   };
 
@@ -115,14 +110,14 @@ export function useOrder() {
     // Form Data
     formData: store.formData,
     errors: store.errors,
-    
+
     // Selected Items (now as objects)
     selectedProduct: store.selectedProduct, // Product object
-    selectedMethod: store.selectedMethod,   // PaymentMethod object
-    
+    selectedMethod: store.selectedMethod, // PaymentMethod object
+
     // Calculations
     calculation: store.getCalculation(), // OrderCalculation object
-    
+
     // Dialog state
     showDialog,
     transactionResult,
@@ -140,7 +135,7 @@ export function useOrder() {
     // Form actions
     setFormData: store.setFormData,
     setSelectedProduct: store.setSelectedProduct, // Now sets Product object
-    setSelectedMethod: store.setSelectedMethod,   // Now sets PaymentMethod object
+    setSelectedMethod: store.setSelectedMethod, // Now sets PaymentMethod object
     setError: store.setError,
     clearErrors: store.clearErrors,
     clearForm: store.clearForm,
