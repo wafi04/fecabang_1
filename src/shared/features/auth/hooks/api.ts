@@ -1,5 +1,6 @@
 "use client";
 import { api } from "@/lib/axios";
+import { useAuthStore } from "@/shared/hooks/authStore";
 import { LoginFormData, RegisterFormData } from "@/shared/schemas/auth";
 import { ErrorResponse } from "@/shared/types/response";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 export function useHandleLogout() {
   const queryClient = useQueryClient();
   const push = useRouter();
+  const { logout } = useAuthStore();
 
   return useMutation({
     mutationKey: ["logout"],
@@ -19,6 +21,8 @@ export function useHandleLogout() {
     onSuccess: () => {
       queryClient.clear();
       push.push("/login");
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      logout();
       toast.success("Logout Succes");
     },
     onError: (error: Error) => {
@@ -55,13 +59,13 @@ export const useLoginMutation = () => {
     mutationKey: ["login"],
     mutationFn: async (data: LoginFormData) => {
       const res = await api.post("/auth/login", data);
-      return res.data;
+      console.log(res)
+      return res.data
     },
     onError: (error: ErrorResponse) => {
-      const errorMessage = error.message || error.message || "Login failed";
-
+      const errorMessage = error.error || error.message || "Login failed";
       queryClient.cancelQueries({ queryKey: ["user"] });
-      toast.error(`Error: ${errorMessage}`);
+      toast.error(`${errorMessage.toUpperCase()}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });

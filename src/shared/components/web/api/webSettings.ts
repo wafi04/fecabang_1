@@ -15,13 +15,15 @@ export function useCreateWebSettings() {
 }
 
 // GET BANNERS BY BRANCH ID
-export function useGetWenSettings() {
+export function useGetWebSettings() {
   return useQuery({
     queryKey: ["web-settings"],
     queryFn: async () => {
       const req = await api.get<API_RESPONSE<WebSettings>>(`/websettings`);
       return req.data;
     },
+    staleTime: 24 * 60 * 1000,
+    gcTime: 24 * 60 * 1000,
   });
 }
 

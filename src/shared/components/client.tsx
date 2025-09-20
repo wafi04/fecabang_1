@@ -13,7 +13,7 @@ export function ClientComponent({ children }: ClientComponentProps) {
     setIsClient(true);
   }, []);
 
-  if (!isClient) return null; // jangan render dulu di server
+  if (!isClient) return null; 
 
   return <>{children}</>;
 }

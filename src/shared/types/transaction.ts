@@ -21,12 +21,12 @@ export interface Transactions {
 }
 
 export interface CreateTransactions {
-  type: "deposit" | "topup";
-  productCode: string;
+  ID: number;
+  productId: number;
   noTujuan: string;
-  nickname: string;
   paymentMethod: string;
 }
+
 export interface DashboardStats {
   total_transactions: number;
   total_amount: number;
@@ -87,4 +87,22 @@ export interface RecentTransaction {
   created_at: string; // bisa di-convert ke Date di runtime
   no_tujuan: string;
   nickname: string;
+}
+
+export interface TransactionsAllData {
+  branchName: string;
+  created_at: string;
+  fee: number;
+  id: number;
+  laba: number;
+  payment_Name: string;
+  price: number;
+  productName: string;
+  purchase_price: number;
+  referenceId: string;
+  status: string;
+  total: number;
+  tujuan: string;
+  updated_at: string;
+  username: string;
 }

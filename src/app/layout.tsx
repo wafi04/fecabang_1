@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ReactQueryProvider } from "@/shared/providers/reactQuery";
+import { AuthInitProvider } from "@/shared/providers/AuthProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ReactQueryProvider>
+          <AuthInitProvider>
+            {children}
+            <Toaster position="top-right" />
+          </AuthInitProvider>
+        </ReactQueryProvider>
+      </body>
     </html>
   );
 }

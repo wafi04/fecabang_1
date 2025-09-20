@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -12,65 +16,23 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Loader2,
-  Save,
-  Upload,
-  Globe,
-  Building2,
-  Share2,
-  MessageCircle,
-  Settings,
-} from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { UpsertWebSettings } from "@/shared/types/websettings";
+import {
+  Building2,
+  Globe,
+  Loader2,
+  MessageCircle,
+  Save,
+  Settings,
+  Share2,
+  Upload,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useCreateWebSettings } from "../api/webSettings";
 
-// Validation schema
-const webSettingsSchema = z.object({
-  website_name: z.string().min(1, "Website name is required"),
-  website_tagline: z.string().optional(),
-  website_description: z.string().optional(),
-  website_keywords: z.string().optional(),
-  logo_url: z.string().url("Invalid URL").optional().or(z.literal("")),
-  logo_dark_url: z.string().url("Invalid URL").optional().or(z.literal("")),
-  favicon_url: z.string().url("Invalid URL").optional().or(z.literal("")),
-  business_name: z.string().optional(),
-  business_address: z.string().optional(),
-  business_phone: z.string().optional(),
-  business_email: z
-    .string()
-    .email("Invalid email")
-    .optional()
-    .or(z.literal("")),
-  business_hours: z.string().optional(),
-  url_facebook: z.string().url("Invalid URL").optional().or(z.literal("")),
-  url_instagram: z.string().url("Invalid URL").optional().or(z.literal("")),
-  url_twitter: z.string().url("Invalid URL").optional().or(z.literal("")),
-  url_youtube: z.string().url("Invalid URL").optional().or(z.literal("")),
-  url_tiktok: z.string().url("Invalid URL").optional().or(z.literal("")),
-  url_whatsapp: z.string().url("Invalid URL").optional().or(z.literal("")),
-  whatsapp_number: z.string().optional(),
-  whatsapp_message: z.string().optional(),
-  url_saluran_whatsapp: z
-    .string()
-    .url("Invalid URL")
-    .optional()
-    .or(z.literal("")),
-  footer_text: z.string().optional(),
-  copyright_text: z.string().optional(),
-  show_social_links: z.boolean(),
-  show_contact_info: z.boolean(),
-});
 
 interface FormWebSettingsProps {
   initialData?: Partial<UpsertWebSettings>;
@@ -170,7 +132,7 @@ export function FormWebSettings({
                     <FormLabel>Website Tagline</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Your website's catchy tagline"
+                        placeholder="Your website&apos;s catchy tagline"
                         {...field}
                       />
                     </FormControl>
@@ -625,7 +587,7 @@ export function FormWebSettings({
                   <FormLabel>Default WhatsApp Message</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Hi! I'm interested in your services..."
+                      placeholder="Hi! I&apos;m interested in your services..."
                       {...field}
                     />
                   </FormControl>
@@ -645,7 +607,7 @@ export function FormWebSettings({
           <CardHeader>
             <CardTitle>Footer Settings</CardTitle>
             <CardDescription>
-              Customize your website's footer content and copyright information.
+              Customize your website&apos;s footer content and copyright information.
             </CardDescription>
           </CardHeader>
           <CardContent>

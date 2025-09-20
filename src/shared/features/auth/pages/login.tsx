@@ -10,9 +10,7 @@ import { useLoginMutation } from "../hooks/api";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loginError, setLoginError] = useState("");
-  const { mutate } = useLoginMutation();
+  const { mutate,isPending,error } = useLoginMutation();
   const {
     register,
     handleSubmit,
@@ -50,22 +48,13 @@ export default function LoginPage() {
     }
   }, [watchedPassword, setValue]);
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    setLoginError("");
-
-    try {
-      mutate(data);
-    } catch (err) {
-      setLoginError("Invalid email or password. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit =(data: LoginFormData) => {
+    mutate(data);
   };
 
   return (
     <AuthPage
-      title="Selamat Datang Kembali!"
+      title="Selamat Datang Kembali"
       description="Masuk ke akun Anda untuk melanjutkan."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -142,9 +131,9 @@ export default function LoginPage() {
         </div>
 
         {/* Error Message */}
-        {loginError && (
+        {error && (
           <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-            {loginError}
+            {error.message}
           </div>
         )}
 
@@ -152,9 +141,9 @@ export default function LoginPage() {
         <Button
           type="submit"
           className="w-full"
-          disabled={!isValid || isLoading}
+          disabled={!isValid || isPending}
         >
-          {isLoading ? (
+          {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Signing in...
@@ -166,7 +155,7 @@ export default function LoginPage() {
 
         {/* Optional: Sign up link */}
         <div className="text-center text-sm text-gray-500">
-          Don't have an account?{" "}
+          Don&lsquo;t have an account?{" "}
           <a href="/register" className="text-primary hover:underline">
             Sign up
           </a>

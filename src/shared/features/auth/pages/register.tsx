@@ -1,45 +1,36 @@
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { AuthPage } from "../component/FormAuth";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { AuthPage } from "../component/FormAuth";
 import { useRegisterMutation } from "../hooks/api";
+import { RegisterFormData } from "@/shared/schemas/auth";
+import Link from "next/link";
 
 export default function RegisterPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [registerError, setRegisterError] = useState("");
-    const {mutate} = useRegisterMutation()
+  const { mutate, isPending, error } = useRegisterMutation();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch
+    watch,
   } = useForm({
     defaultValues: {
       username: "",
       email: "",
       password: "",
-      confirmPassword: ""
-    }
+      confirmPassword: "",
+    },
   });
 
   const password = watch("password");
 
-  const onSubmit = async (data: any) => {
-    setIsLoading(true);
-    setRegisterError("");
-    
-    try {      
-      mutate(data)      
-    } catch (error) {
-      setRegisterError("Terjadi kesalahan. Silahkan coba lagi.");
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (data: RegisterFormData) => {
+    mutate(data);
   };
 
   return (
@@ -67,7 +58,8 @@ export default function RegisterPage() {
               },
               pattern: {
                 value: /^[a-zA-Z0-9_]+$/,
-                message: "Username hanya boleh mengandung huruf, angka, dan underscore",
+                message:
+                  "Username hanya boleh mengandung huruf, angka, dan underscore",
               },
             })}
             aria-invalid={errors.username ? "true" : "false"}
@@ -114,7 +106,8 @@ export default function RegisterPage() {
                 },
                 pattern: {
                   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                  message: "Password harus mengandung huruf besar, huruf kecil, dan angka",
+                  message:
+                    "Password harus mengandung huruf besar, huruf kecil, dan angka",
                 },
               })}
               aria-invalid={errors.password ? "true" : "false"}
@@ -146,7 +139,7 @@ export default function RegisterPage() {
               placeholder="••••••••"
               {...register("confirmPassword", {
                 required: "Konfirmasi password wajib diisi",
-                validate: (value) => 
+                validate: (value) =>
                   value === password || "Password tidak cocok",
               })}
               aria-invalid={errors.confirmPassword ? "true" : "false"}
@@ -164,24 +157,22 @@ export default function RegisterPage() {
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+            <p className="text-sm text-red-500">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
 
         {/* Error Message */}
-        {registerError && (
-          <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-            {registerError}
+        {error && (
+          <div className="rounded-md  p-3 text-sm text-red-600">
+            {error.message}
           </div>
         )}
 
         {/* Submit Button */}
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isLoading}
-        >
-          {isLoading ? (
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Mendaftar...
@@ -194,9 +185,9 @@ export default function RegisterPage() {
         {/* Sign in link */}
         <div className="text-center text-sm text-gray-500">
           Sudah punya akun?{" "}
-          <a href="/login" className="text-primary hover:underline">
+          <Link href="/login" className="text-primary hover:underline">
             Masuk di sini
-          </a>
+          </Link>
         </div>
       </form>
     </AuthPage>

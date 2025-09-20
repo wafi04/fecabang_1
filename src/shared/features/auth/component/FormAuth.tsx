@@ -13,7 +13,7 @@ interface AuthPageProps {
 }
 export function AuthPage({ children, description, title }: AuthPageProps) {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-muted p-4">
+    <main className="min-h-screen flex items-center justify-center  p-4">
       <Card className="w-full max-w-md mx-auto ">
         <CardHeader>
           <CardTitle>{title}</CardTitle>

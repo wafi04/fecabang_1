@@ -20,7 +20,6 @@ export function UseCreateBanner() {
   });
 }
 
-// GET BANNERS BY BRANCH ID
 export function UseGetBannersByBranchId() {
   return useQuery({
     queryKey: ["banners"],
@@ -33,7 +32,6 @@ export function UseGetBannersByBranchId() {
   });
 }
 
-// DELETE BANNER
 export function UseDeleteBanner() {
   return useMutation({
     mutationKey: ["delete-banner"],

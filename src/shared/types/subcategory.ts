@@ -44,3 +44,18 @@ instruction : string
 information : string
 isCheckNickname : boolean
 }
+
+
+export type CategoryType = "games" | "voucher" | "pulsa" | "ewallet" | "pln";
+export type CategoryOmit = Omit<Category, "created_at" | "updated_at">;
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  type: CategoryType;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}

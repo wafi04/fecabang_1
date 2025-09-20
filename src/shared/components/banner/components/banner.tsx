@@ -1,3 +1,4 @@
+"use client"
 import { UseGetBannersByBranchId } from "@/shared/components/banner/hooks/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -9,6 +10,8 @@ export default function Banner() {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
 
   const banners = data?.data ?? [];
+
+ 
   useEffect(() => {
     if (!isAutoPlay) return;
 
@@ -27,12 +30,16 @@ export default function Banner() {
     setCurrentSlide((prev) => (prev - 1 + banners.length) % banners.length);
   };
 
+   if (banners.length === 0){
+    return undefined
+  }
+
 
   return (
-    <section className="relative flex items-center overflow-hidden  py-4 lg:min-h-[553.96px] lg:py-8">
+    <section className="relative flex items-center overflow-hidden lg:min-h-[553.96px] lg:py-8 z-10">
       {/* Main Slider Container */}
       <div
-        className="relative aspect-[1080/424] overflow-hidden rounded-3xl group"
+        className="relative w-full overflow-hidden rounded-3xl group"
         onMouseEnter={() => setIsAutoPlay(false)}
         onMouseLeave={() => setIsAutoPlay(true)}
       >
@@ -43,7 +50,7 @@ export default function Banner() {
         >
           {banners.map((banner, index) => (
             <div key={banner.id} className="w-full flex-shrink-0 relative">
-              <div className="relative h-full overflow-hidden">
+              <div className="w-full relative h-full overflow-hidden">
                 <Image
                   width={1000}
                   height={1000}

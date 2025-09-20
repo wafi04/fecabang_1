@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { useOrderStore } from "./useSelectProductAndMethod";
 import { TransactionResponse, useCreateTransactions } from "@/_transactions/hooks/api";
+
 
 export function useOrder() {
   const { mutate, isPending } = useCreateTransactions();
@@ -15,16 +15,15 @@ export function useOrder() {
   const submitOrder = () => {
     if (isSubmitting || isPending) return;
 
-    // Validasi form terlebih dahulu
-    // store.clearErrors();
-    // if (!store.validateForm()) {
-    //   return;
-    // }
-
     setIsSubmitting(true);
 
     try {
-      const { formData, selectedMethod } = store;
+      const { formData, selectedProduct, selectedMethod } = store;
+
+      // Validate required data
+      if (!selectedProduct || !selectedMethod) {
+        throw new Error("Product dan metode pembayaran harus dipilih");
+      }
 
       const noTujuan = formData.serverId?.trim()
         ? `${formData.gameId.trim()}${formData.serverId.trim()}`
@@ -32,23 +31,20 @@ export function useOrder() {
 
       mutate(
         {
-          nickname: formData.nickname.trim() || "ssss",
           noTujuan,
-          type: "topup",
-          paymentMethod: selectedMethod!.code,
-          productCode: store.productCode,
+        ID : selectedProduct.id,
+          paymentMethod: selectedMethod.code,
+          productId: selectedProduct.productId,
           ...(formData.voucherCode && {
             voucherCode: formData.voucherCode.trim().toUpperCase(),
           }),
         },
         {
           onSuccess: (data) => {
-            console.log("Transaction successful:", data);
             setTransactionResult(data.data);
             setShowDialog(true);
           },
           onError: (error) => {
-            console.error("Transaction failed:", error);
             const message =
               error instanceof Error ? error.message : "Terjadi kesalahan";
             store.setError("root", message);
@@ -77,35 +73,85 @@ export function useOrder() {
     }
   };
 
-  return {
-    // State
-    ...store.formData,
-    errors: store.errors,
-    productPrice: store.productPrice,
-    selectedMethod: store.selectedMethod,
-    productCode: store.productCode,
-    calculation: store.getCalculation(),
+  // Helper function to get order summary
+  const getOrderSummary = () => {
+    const { selectedProduct, selectedMethod } = store;
+    const calculation = store.getCalculation();
+    
+    if (!selectedProduct || !selectedMethod) {
+      return null;
+    }
 
+    return {
+      product: selectedProduct,
+      paymentMethod: selectedMethod,
+      calculation,
+      customer: {
+        gameId: store.formData.gameId,
+        serverId: store.formData.serverId,
+        noTujuan: store.formData.serverId?.trim()
+          ? `${store.formData.gameId.trim()}${store.formData.serverId.trim()}`
+          : store.formData.gameId.trim(),
+      },
+      voucher: store.formData.voucherCode ? {
+        code: store.formData.voucherCode.trim().toUpperCase(),
+        discount: calculation.discount
+      } : null,
+    };
+  };
+
+  // Helper function to check if order is valid
+  const isOrderValid = () => {
+    const { selectedProduct, selectedMethod, formData } = store;
+    return (
+      selectedProduct &&
+      selectedMethod &&
+      formData.gameId?.trim() &&
+      store.validateForm()
+    );
+  };
+
+  return {
+    // Form Data
+    formData: store.formData,
+    errors: store.errors,
+    
+    // Selected Items (now as objects)
+    selectedProduct: store.selectedProduct, // Product object
+    selectedMethod: store.selectedMethod,   // PaymentMethod object
+    
+    // Calculations
+    calculation: store.getCalculation(), // OrderCalculation object
+    
     // Dialog state
     showDialog,
     transactionResult,
 
-    // Loading
+    // Loading states
     isSubmitting: isSubmitting || isPending,
+    isPending,
 
-    // Actions
+    // Validation
+    isOrderValid: isOrderValid(),
+
+    // Order summary
+    orderSummary: getOrderSummary(),
+
+    // Form actions
     setFormData: store.setFormData,
-    setProductPrice: store.setProductPrice,
-    setSelectedMethod: store.setSelectedMethod,
-    setProductCode: store.setProductCode,
+    setSelectedProduct: store.setSelectedProduct, // Now sets Product object
+    setSelectedMethod: store.setSelectedMethod,   // Now sets PaymentMethod object
     setError: store.setError,
     clearErrors: store.clearErrors,
     clearForm: store.clearForm,
     validateForm: store.validateForm,
 
-    // Dialog actions
-    submitOrder, // Langsung submit tanpa konfirmasi
-    confirmOrder, // Alias untuk submitOrder (untuk backward compatibility)
-    closeDialog, // Close dialog hasil transaksi
+    // Transaction actions
+    submitOrder,
+    confirmOrder,
+    closeDialog,
+
+    // Utility functions
+    getOrderSummary,
   };
 }

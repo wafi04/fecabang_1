@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { Upload, X, Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { api } from "@/lib/axios";
-import { API_RESPONSE } from "@/shared/types/response";
+import { Loader2, Upload, X } from "lucide-react";
+import Image from "next/image";
+import React, { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface ImageUploadProps {
   onUpload?: (file: File) => Promise<string>;
@@ -46,7 +46,8 @@ const defaultUploadImage = async (file: File): Promise<string> => {
     return response.data.url;
 
   } catch (error) {
-    toast.error("Upload failed");
+   const failedErorr =  error instanceof Error ? error.message : "Upload failed"
+    toast.error(failedErorr);
   }
   return "";
 };
@@ -110,9 +111,7 @@ export function ImageUpload({
       // Clean up the object URL
       URL.revokeObjectURL(previewUrl);
     } catch (err) {
-      console.error("Upload failed:", err);
       setError(err instanceof Error ? err.message : "Upload failed");
-      // Revert to previous state on error
       setPreview(currentUrl || null);
     } finally {
       setIsUploading(false);
@@ -137,7 +136,7 @@ export function ImageUpload({
         processFile(files[0]);
       }
     },
-    [onUpload, maxSize, acceptedTypes]
+    [onUpload, maxSize, acceptedTypes,processFile,acceptedTypes,maxSize,onUpload]
   );
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -209,7 +208,9 @@ export function ImageUpload({
 
         {preview && (
           <div className="relative group">
-            <img
+            <Image
+              width={100}
+              height={100}
               src={preview}
               alt="Preview"
               className="w-full h-20 object-cover rounded border"

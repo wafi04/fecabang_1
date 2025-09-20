@@ -4,13 +4,9 @@ export interface WithChildren {
   children: ReactNode;
 }
 export interface ErrorResponse {
-  statusCode: number;
+  code: number;
+  error : string
   message?: string;
-}
-export interface FilterRequest {
-  limit: string;
-  page?: string;
-  search?: string;
 }
 
 export type API_RESPONSE<T> = {
@@ -50,4 +46,13 @@ export interface FilterAll extends PaginationParams {
   search?: string;
   type?: string;
   status?: string;
+}
+
+
+export interface FilterRequest {
+  limit : string
+  page : string
+  search? : string
+  status? : string
+  brand? : string
 }

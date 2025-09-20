@@ -1,9 +1,17 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
-import { API_RESPONSE } from "@/shared/types/response";
+import { API_RESPONSE, ErrorResponse } from "@/shared/types/response";
+
+interface BackendResponse<T> {
+  message: string;
+  data?: T;
+  error?: string;
+}
 
 interface ApiError {
   message: string;
-  status?: number;
+  code: number;
+  error?: string;
+  success: boolean;
 }
 
 interface RequestConfig {
@@ -13,20 +21,52 @@ interface RequestConfig {
 
 export class Api {
   private instance: AxiosInstance;
+  
   constructor() {
     this.instance = axios.create({
       baseURL: "https://apitesting.zilog.my.id/api/v1",
       withCredentials: true,
       headers: {
-        Branchname: "utama",
-        Branchcode: "b246285b-d9ed-4eca-afbd-ad86b284c5b2",
+        Branchname: "TAPAK SUCI MUALLIMIN",
+        Branchcode: "2d1dca0e-a7b4-45a0-b4cb-8cac837603ff",
       },
     });
 
     this.instance.interceptors.response.use(
-      (response: AxiosResponse) => response,
+      (response: AxiosResponse) => {
+        return {
+          ...response,
+          data: {
+            data: response.data,
+            status: response.status,
+            message: response.data.message,
+          }
+        };
+      },
       async (error: AxiosError) => {
-        const originalRequest = error.config as any;
+        if (error.response) {
+          const errorData = error.response.data as BackendResponse<any>;
+          throw {
+            code: error.response.status,
+            message: errorData.message || error.message,
+            error: errorData.error,
+            success: false,
+          } as ApiError;
+        } else if (error.request) {
+          throw {
+            code: 0,
+            message: "Network error - no response received",
+            error: error.message,
+            success: false,
+          } as ApiError;
+        } else {
+          throw {
+            code: -1,
+            message: error.message,
+            error: error.message,
+            success: false,
+          } as ApiError;
+        }
       }
     );
   }
@@ -47,13 +87,14 @@ export class Api {
               formData.append(`${key}[${index}]`, String(item));
             }
           });
-        } else {
+        } else if (value !== null && value !== undefined) {
           formData.append(key, String(value));
         }
       });
     }
     return formData;
   }
+
   private getHeaders(config?: RequestConfig) {
     if (config?.isMultipart) {
       return {
@@ -69,16 +110,13 @@ export class Api {
 
   async get<T>(url: string, config?: RequestConfig): Promise<API_RESPONSE<T>> {
     try {
-      const response: API_RESPONSE<T> = await this.instance.get(url, {
+      const response = await this.instance.get(url, {
         headers: this.getHeaders(config),
       });
-      return {
-        data: response.data,
-        status: response.status as number,
-        message: response.message,
-      };
+      
+      return response.data as API_RESPONSE<T>;
     } catch (error) {
-      throw this.handleError(error as AxiosError);
+      throw this.handleError(error as ApiError);
     }
   }
 
@@ -93,22 +131,16 @@ export class Api {
           ? data
           : this.formatData(data, config?.isMultipart);
 
-      const response: AxiosResponse<T> = await this.instance.post(
-        url,
-        formattedData,
-        {
-          headers: this.getHeaders(config),
-        }
-      );
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText,
-      };
+      const response = await this.instance.post(url, formattedData, {
+        headers: this.getHeaders(config),
+      });
+
+      return response.data as API_RESPONSE<T>;
     } catch (error) {
-      throw this.handleError(error as AxiosError);
+      throw this.handleError(error as ApiError);
     }
   }
+
   async put<T>(
     url: string,
     data?: unknown,
@@ -120,20 +152,13 @@ export class Api {
           ? data
           : this.formatData(data, config?.isMultipart);
 
-      const response: AxiosResponse<T> = await this.instance.put(
-        url,
-        formattedData,
-        {
-          headers: this.getHeaders(config),
-        }
-      );
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText,
-      };
+      const response = await this.instance.put(url, formattedData, {
+        headers: this.getHeaders(config),
+      });
+      
+      return response.data as API_RESPONSE<T>;
     } catch (error) {
-      throw this.handleError(error as AxiosError);
+      throw this.handleError(error as ApiError);
     }
   }
 
@@ -144,20 +169,13 @@ export class Api {
   ): Promise<API_RESPONSE<T>> {
     try {
       const formattedData = this.formatData(data, config?.isMultipart);
-      const response: AxiosResponse<T> = await this.instance.patch(
-        url,
-        formattedData,
-        {
-          headers: this.getHeaders(config),
-        }
-      );
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText,
-      };
+      const response = await this.instance.patch(url, formattedData, {
+        headers: this.getHeaders(config),
+      });
+      
+      return response.data as API_RESPONSE<T>;
     } catch (error) {
-      throw this.handleError(error as AxiosError);
+      throw this.handleError(error as ApiError);
     }
   }
 
@@ -166,23 +184,22 @@ export class Api {
     config?: RequestConfig
   ): Promise<API_RESPONSE<T>> {
     try {
-      const response: AxiosResponse<T> = await this.instance.delete(url, {
+      const response = await this.instance.delete(url, {
         headers: this.getHeaders(config),
       });
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText,
-      };
+      
+      return response.data as API_RESPONSE<T>;
     } catch (error) {
-      throw this.handleError(error as AxiosError);
+      throw this.handleError(error as ApiError);
     }
   }
 
-  private handleError(error: any): ApiError {
+  private handleError(error: ApiError): ApiError {    
     return {
-      message: error.message,
-      status: error.response?.status,
+      code: error.code || -1,
+      message: error.message || 'Unknown error occurred',
+      success: false,
+      error: error.error || error.message,
     };
   }
 }
