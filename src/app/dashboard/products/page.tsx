@@ -6,7 +6,13 @@ import { useState, useCallback, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search, Package, Filter } from "lucide-react";
 
 interface Filters {
@@ -84,7 +90,7 @@ export default function DashboardProduct() {
             <div className="h-4 bg-muted rounded w-32 animate-pulse"></div>
           </div>
         </div>
-        
+
         <div className="border rounded-lg">
           <div className="p-4 border-b">
             <div className="flex flex-col sm:flex-row gap-4">
@@ -95,7 +101,7 @@ export default function DashboardProduct() {
               </div>
             </div>
           </div>
-          
+
           <div className="animate-pulse">
             <div className="h-12 bg-muted/50"></div>
             {[...Array(5)].map((_, i) => (
@@ -110,31 +116,30 @@ export default function DashboardProduct() {
   const products = data?.data?.data || [];
   const meta = data?.data?.meta;
   const hasActiveFilters = filters.search || filters.status !== "active";
-
   return (
     <main className="space-y-6 p-6 h-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Produk Reseller</h1>
-          <p className="text-muted-foreground">
-            Kelola harga produk reseller
-          </p>
+          <p className="text-muted-foreground">Kelola harga produk reseller</p>
         </div>
-        
+
         {/* Status indicators */}
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs">
             Total: {meta?.totalItems || 0}
           </Badge>
           {filters.status && (
-            <Badge 
+            <Badge
               variant={filters.status === "active" ? "default" : "secondary"}
               className="text-xs"
             >
-              {filters.status === "active" ? "Aktif" : 
-               filters.status === "inactive" ? "Tidak Aktif" : 
-               "Semua"}
+              {filters.status === "active"
+                ? "Aktif"
+                : filters.status === "inactive"
+                ? "Tidak Aktif"
+                : "Semua"}
             </Badge>
           )}
         </div>
@@ -147,7 +152,7 @@ export default function DashboardProduct() {
             <Filter className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-medium">Filter & Pencarian</span>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 max-w-md">
@@ -165,8 +170,13 @@ export default function DashboardProduct() {
             <div className="flex items-center gap-3">
               {/* Status Filter */}
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Status:</span>
-                <Select value={filters.status} onValueChange={handleStatusChange}>
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Status:
+                </span>
+                <Select
+                  value={filters.status}
+                  onValueChange={handleStatusChange}
+                >
                   <SelectTrigger className="w-32">
                     <SelectValue />
                   </SelectTrigger>
@@ -179,8 +189,13 @@ export default function DashboardProduct() {
 
               {/* Items per page */}
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Show:</span>
-                <Select value={filters.limit.toString()} onValueChange={handleLimitChange}>
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Show:
+                </span>
+                <Select
+                  value={filters.limit.toString()}
+                  onValueChange={handleLimitChange}
+                >
                   <SelectTrigger className="w-20">
                     <SelectValue />
                   </SelectTrigger>
@@ -196,8 +211,8 @@ export default function DashboardProduct() {
 
               {/* Clear filters */}
               {hasActiveFilters && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={clearFilters}
                   className="text-xs"
@@ -221,7 +236,8 @@ export default function DashboardProduct() {
               )}
               {filters.status !== "active" && (
                 <Badge variant="secondary" className="text-xs">
-                  Status: {filters.status === "inactive" ? "Tidak Aktif" : "Semua"}
+                  Status:{" "}
+                  {filters.status === "inactive" ? "Tidak Aktif" : "Semua"}
                 </Badge>
               )}
             </div>
@@ -239,21 +255,29 @@ export default function DashboardProduct() {
                   <Package className="h-8 w-8 text-muted-foreground" />
                 </div>
               </div>
-              
+
               <h3 className="text-lg font-semibold text-foreground mb-2">
                 {filters.search || filters.status !== "active"
                   ? "Produk tidak ditemukan"
                   : "Tidak ada data produk"}
               </h3>
-              
+
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 {filters.search
-                  ? `Tidak ada produk yang cocok dengan pencarian "${filters.search}"${filters.status !== "active" ? ` dengan status ${filters.status}` : ""}.`
+                  ? `Tidak ada produk yang cocok dengan pencarian "${
+                      filters.search
+                    }"${
+                      filters.status !== "active"
+                        ? ` dengan status ${filters.status}`
+                        : ""
+                    }.`
                   : filters.status !== "active"
-                  ? `Tidak ada produk dengan status ${filters.status === "inactive" ? "tidak aktif" : "tersebut"}.`
+                  ? `Tidak ada produk dengan status ${
+                      filters.status === "inactive" ? "tidak aktif" : "tersebut"
+                    }.`
                   : "Belum ada data produk reseller yang tersedia."}
               </p>
-              
+
               {hasActiveFilters && (
                 <Button onClick={clearFilters} variant="outline">
                   <Filter className="h-4 w-4 mr-2" />

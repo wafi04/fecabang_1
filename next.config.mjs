@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output : 'standalone',
-  allowedDevOrigins : ["https://fe.zilog.my.id"],
-  eslint : {
-    ignoreDuringBuilds : true
+  output: "standalone",
+  allowedDevOrigins: ["https://fe.zilog.my.id"],
+  eslint: {
+    ignoreDuringBuilds: true,
   },
   images: {
     remotePatterns: [
@@ -36,6 +36,9 @@ const nextConfig = {
       },
       {
         hostname: "semutganteng.fra1.digitaloceanspaces.com",
+      },
+      {
+        hostname: "localhost",
       },
     ],
   },

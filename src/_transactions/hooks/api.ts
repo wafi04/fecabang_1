@@ -30,6 +30,8 @@ export function useGetAllTransactions(filters: FilterRequest) {
       if (filters?.page) params.append("page", filters.page);
       if (filters?.search) params.append("search", filters.search);
       if (filters?.status) params.append("status", filters.status);
+      if (filters?.start_date) params.append("start_date", filters.start_date);
+      if (filters?.end_date) params.append("end_date", filters.end_date);
 
       const data = await api.get<ApiPagination<TransactionsAllData[]>>(
         `/trxreseller?${params.toString()}`

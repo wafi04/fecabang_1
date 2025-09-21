@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,12 +28,12 @@ import {
   Save,
   Settings,
   Share2,
-  Upload,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ImageUpload } from "../../upload/imageForm";
 import { useCreateWebSettings } from "../api/webSettings";
-
+import { toast } from "sonner";
 
 interface FormWebSettingsProps {
   initialData?: Partial<UpsertWebSettings>;
@@ -48,37 +48,37 @@ export function FormWebSettings({
   const { mutate } = useCreateWebSettings();
   const form = useForm<UpsertWebSettings>({
     defaultValues: {
-      website_name: "",
-      website_tagline: "",
-      website_description: "",
-      website_keywords: "",
-      logo_url: "",
-      logo_dark_url: "",
-      favicon_url: "",
-      business_name: "",
-      business_address: "",
-      business_phone: "",
-      business_email: "",
-      business_hours: "",
-      url_facebook: "",
-      url_instagram: "",
-      url_twitter: "",
-      url_youtube: "",
-      url_tiktok: "",
-      url_whatsapp: "",
-      whatsapp_number: "",
-      whatsapp_message: "",
-      url_saluran_whatsapp: "",
-      footer_text: "",
-      copyright_text: "",
-      show_social_links: false,
-      show_contact_info: false,
+      website_name: initialData?.website_name ?? "",
+      website_tagline: initialData?.website_tagline ?? "",
+      website_description: initialData?.website_description ?? "",
+      website_keywords: initialData?.website_keywords ?? "",
+      logo_url: initialData?.logo_url ?? "",
+      logo_dark_url: initialData?.logo_dark_url ?? "",
+      favicon_url: initialData?.favicon_url ?? "",
+      business_name: initialData?.business_name ?? "",
+      business_address: initialData?.business_address ?? "",
+      business_phone: initialData?.business_phone ?? "",
+      business_email: initialData?.business_email ?? "",
+      business_hours: initialData?.business_hours ?? "",
+      url_facebook: initialData?.url_facebook ?? "",
+      url_instagram: initialData?.url_instagram ?? "",
+      url_twitter: initialData?.url_twitter ?? "",
+      url_youtube: initialData?.url_youtube ?? "",
+      url_tiktok: initialData?.url_tiktok ?? "",
+      url_whatsapp: initialData?.url_whatsapp ?? "",
+      whatsapp_number: initialData?.whatsapp_number ?? "",
+      whatsapp_message: initialData?.whatsapp_message ?? "",
+      url_saluran_whatsapp: initialData?.url_saluran_whatsapp ?? "",
+      footer_text: initialData?.footer_text ?? "",
+      copyright_text: initialData?.copyright_text ?? "",
+      show_social_links: initialData?.show_social_links ?? false,
+      show_contact_info: initialData?.show_contact_info ?? false,
     },
   });
 
   useEffect(() => {
     if (initialData) {
-      form.reset(initialData); // ini yang bikin ke-load
+      form.reset(initialData);
     }
   }, [initialData, form]);
 
@@ -87,7 +87,7 @@ export function FormWebSettings({
       setIsSubmitting(true);
       mutate(data);
     } catch (error) {
-      console.error("Failed to submit form:", error);
+      toast.error("Failed to submit form");
     } finally {
       setIsSubmitting(false);
     }
@@ -133,7 +133,7 @@ export function FormWebSettings({
                     <FormLabel>Website Tagline</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Your website&apos;s catchy tagline"
+                        placeholder="Your website's catchy tagline"
                         {...field}
                       />
                     </FormControl>
@@ -200,7 +200,7 @@ export function FormWebSettings({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="logo_url"
@@ -208,37 +208,10 @@ export function FormWebSettings({
                   <FormItem>
                     <FormLabel>Logo URL</FormLabel>
                     <FormControl>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="https://example.com/logo.png"
-                          {...field}
-                        />
-                        <Button type="button" variant="outline" size="icon">
-                          <Upload className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="logo_dark_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Dark Mode Logo URL</FormLabel>
-                    <FormControl>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="https://example.com/logo-dark.png"
-                          {...field}
-                        />
-                        <Button type="button" variant="outline" size="icon">
-                          <Upload className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <ImageUpload
+                        onUrlChange={field.onChange}
+                        currentUrl={field.value}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -252,15 +225,10 @@ export function FormWebSettings({
                   <FormItem>
                     <FormLabel>Favicon URL</FormLabel>
                     <FormControl>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="https://example.com/favicon.ico"
-                          {...field}
-                        />
-                        <Button type="button" variant="outline" size="icon">
-                          <Upload className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <ImageUpload
+                        onUrlChange={field.onChange}
+                        currentUrl={field.value}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -298,7 +266,7 @@ export function FormWebSettings({
             />
 
             {/* Contact Information */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="business_email"
@@ -325,20 +293,6 @@ export function FormWebSettings({
                     <FormLabel>Business Phone</FormLabel>
                     <FormControl>
                       <Input placeholder="+1 (555) 123-4567" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="business_hours"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Business Hours</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Mon-Fri 9AM-5PM" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -588,7 +542,7 @@ export function FormWebSettings({
                   <FormLabel>Default WhatsApp Message</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Hi! I&apos;m interested in your services..."
+                      placeholder="Hi! I'm interested in your services..."
                       {...field}
                     />
                   </FormControl>
@@ -608,7 +562,8 @@ export function FormWebSettings({
           <CardHeader>
             <CardTitle>Footer Settings</CardTitle>
             <CardDescription>
-              Customize your website&apos;s footer content and copyright information.
+              Customize your website&apos;s footer content and copyright
+              information.
             </CardDescription>
           </CardHeader>
           <CardContent>

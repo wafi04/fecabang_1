@@ -1,67 +1,101 @@
 "use client";
+
 import { useGetAllTransactions } from "@/_transactions/hooks/api";
 import { FilterDashboard } from "@/shared/components/filter/filter";
 import { PaginationComponents } from "@/shared/components/filter/pagination";
 import { useState } from "react";
 import { TableOrder } from "./table";
-import { Loader2 } from "lucide-react";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import { Loader2, Calendar as CalendarIcon } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { formatDate } from "@/shared/utils/format";
 
 export default function OrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentLimit, setCurrentLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date());
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
 
   const { data, isLoading } = useGetAllTransactions({
     limit: currentLimit.toString(),
     page: currentPage.toString(),
     search: searchTerm,
     status: statusFilter,
+    start_date: startDate ? startDate.toISOString() : "",
+    end_date: endDate ? endDate.toISOString() : "",
   });
-
-  // Handler untuk pagination
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // Handler untuk limit change
-  const handleLimitChange = (limit: number) => {
-    setCurrentLimit(limit);
-    setCurrentPage(1);
-  };
-
-  const handleSearchChange = (search: string) => {
-    setSearchTerm(search);
-    setCurrentPage(1); 
-  };
-
-  const handleStatusChange = (status: string) => {
-    setStatusFilter(status);
-    setCurrentPage(1); 
-  };
 
   return (
     <main className="p-6">
       <section className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h3 className="text-2xl font-bold">
-          Data Transaksi  
-        </h3>
+        <h3 className="text-2xl font-bold">Data Transaksi</h3>
         <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[350px] justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {startDate && endDate ? (
+                  <>
+                    {formatDate(startDate.toISOString(), "date-only")} -{" "}
+                    {formatDate(endDate.toISOString(), "date-only")}
+                  </>
+                ) : (
+                  <span>Pilih Tanggal</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="range"
+                selected={{ from: startDate, to: endDate }}
+                onSelect={(range) => {
+                  setStartDate(range?.from);
+                  setEndDate(range?.to);
+                  setCurrentPage(1);
+                }}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
           <FilterDashboard
             currentLimit={currentLimit}
             searchTerm={searchTerm}
-            setCurrentLimit={handleLimitChange}
-            setSearchTerm={handleSearchChange}
+            setCurrentLimit={(limit) => {
+              setCurrentLimit(limit);
+              setCurrentPage(1);
+            }}
+            setSearchTerm={(s) => {
+              setSearchTerm(s);
+              setCurrentPage(1);
+            }}
           />
-          
-          <Select value={statusFilter} onValueChange={handleStatusChange}>
+
+          {/* Filter Status */}
+          <Select
+            value={statusFilter}
+            onValueChange={(status) => {
+              setStatusFilter(status);
+              setCurrentPage(1);
+            }}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter Status" />
             </SelectTrigger>
@@ -73,6 +107,8 @@ export default function OrdersPage() {
               <SelectItem value="processing">Processing</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Popover Date Range */}
         </div>
       </section>
 
@@ -88,7 +124,7 @@ export default function OrdersPage() {
 
       {data?.data.meta && (
         <PaginationComponents
-          onPageChange={handlePageChange}
+          onPageChange={setCurrentPage}
           pagination={data?.data.meta}
         />
       )}

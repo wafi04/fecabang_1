@@ -5,7 +5,7 @@ export interface WithChildren {
 }
 export interface ErrorResponse {
   code: number;
-  error : string
+  error: string;
   message?: string;
 }
 
@@ -48,11 +48,12 @@ export interface FilterAll extends PaginationParams {
   status?: string;
 }
 
-
 export interface FilterRequest {
-  limit : string
-  page : string
-  search? : string
-  status? : string
-  brand? : string
+  limit: string;
+  page: string;
+  search?: string;
+  status?: string;
+  brand?: string;
+  start_date?: string;
+  end_date?: string;
 }

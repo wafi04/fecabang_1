@@ -13,8 +13,11 @@ interface TableProductsProps {
 }
 
 export function TableProducts({ products }: TableProductsProps) {
-  const { products: editedProducts, setProducts, updateProduct } =
-    useProductsStore();
+  const {
+    products: editedProducts,
+    setProducts,
+    updateProduct,
+  } = useProductsStore();
   const { mutate, isPending } = useUpdateResellerPricing();
 
   // pertama kali set data ke store
@@ -39,13 +42,13 @@ export function TableProducts({ products }: TableProductsProps) {
 
   if (editedProducts.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
         <div className="px-4 py-8 text-center">
-          <div className="text-gray-400 mb-4">🚀</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className="text-muted-foreground mb-4 text-4xl">🚀</div>
+          <h3 className="text-lg font-medium text-foreground mb-2">
             Tidak ada data produk
           </h3>
-          <p className="text-gray-500">
+          <p className="text-muted-foreground">
             Belum ada produk reseller yang tersedia.
           </p>
         </div>
@@ -54,79 +57,98 @@ export function TableProducts({ products }: TableProductsProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-4 border-b border-gray-200 flex justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">
+      <div className="px-4 py-4 border-b border-border flex justify-between">
+        <h2 className="text-lg font-semibold text-foreground">
           Produk Reseller ({editedProducts.length})
         </h2>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-muted-foreground">
           Update terakhir:{" "}
-          {formatDate(editedProducts[0]?.updated_at || new Date().toISOString())}
+          {formatDate(
+            editedProducts[0]?.updated_at || new Date().toISOString()
+          )}
         </div>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-muted/50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Produk
               </th>
-              <th className="px-4 py-3">Harga Modal</th>
-              <th className="px-4 py-3">Harga Jual</th>
-              <th className="px-4 py-3">Margin</th>
-              <th className="px-4 py-3">Harga Promo</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Update</th>
-              <th />
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Harga Modal
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Harga Jual
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Margin
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Harga Promo
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Update
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Aksi
+              </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {editedProducts.map((product) => {
               const id = `${product.productID}-${product.branchID}`;
               return (
-                <tr key={id} className="hover:bg-gray-50">
+                <tr key={id} className="hover:bg-muted/50 transition-colors">
                   {/* Nama Produk */}
-                  <td className="px-4 py-4">
-                    <Input
-                      value={product.productName}
-                      onChange={(e) =>
-                        updateProduct(id, "productName", e.target.value)
-                      }
-                    />
-                  </td>
+                  <td className="px-4 py-4">{product.productName}</td>
 
                   {/* Harga Modal */}
-                  <td className="px-4 py-4">{FormatCurrency(product.hargaModal)}</td>
+                  <td className="px-4 py-4 text-foreground font-medium">
+                    {FormatCurrency(product.hargaModal)}
+                  </td>
 
                   {/* Harga Jual */}
-                  <td className="px-4 py-4">{FormatCurrency(product.hargaJual)}</td>
+                  <td className="px-4 py-4 text-foreground font-medium">
+                    {FormatCurrency(product.hargaJual)}
+                  </td>
 
                   {/* Margin */}
                   <td className="px-4 py-4 w-32">
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={product.marginValue ?? ""}
                       onChange={(e) => {
-                        const raw = e.target.value;
+                        const raw = e.target.value.replace(/\D/g, ""); // hapus semua non-digit
                         const value = raw === "" ? null : Number(raw);
                         updateProduct(id, "marginValue", value);
                       }}
+                      placeholder="0"
                     />
                   </td>
 
                   {/* Harga Promo */}
                   <td className="px-4 py-4 w-32">
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={product.hargaPromo ?? ""}
                       onChange={(e) => {
-                        const raw = e.target.value;
+                        const raw = e.target.value.replace(/\D/g, ""); // hapus semua non-digit
                         const value = raw === "" ? null : Number(raw);
                         updateProduct(id, "hargaPromo", value);
                       }}
+                      placeholder="0"
                     />
                   </td>
 
@@ -134,12 +156,14 @@ export function TableProducts({ products }: TableProductsProps) {
                   <td className="px-4 py-4">
                     <Switch
                       checked={product.isActive}
-                      onCheckedChange={(val) => updateProduct(id, "isActive", val)}
+                      onCheckedChange={(val) =>
+                        updateProduct(id, "isActive", val)
+                      }
                     />
                   </td>
 
                   {/* Update Time */}
-                  <td className="px-4 py-4 text-sm text-gray-500">
+                  <td className="px-4 py-4 text-sm text-muted-foreground">
                     {formatDate(product.updated_at)}
                   </td>
 

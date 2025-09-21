@@ -42,8 +42,8 @@ export default function OrderLayout() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center space-y-4">
             <p className="text-gray-500">Category not found</p>
-            <button 
-              onClick={() => window.history.back()} 
+            <button
+              onClick={() => window.history.back()}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
             >
               Go Back
@@ -77,9 +77,9 @@ export default function OrderLayout() {
               inf={dataCategory.categoryInformation as string}
             />
 
-            <PlaceHolderInput 
-              brand={slug as string} 
-              isCheckNickName={dataCategory.isCheckNickname} 
+            <PlaceHolderInput
+              brand={slug as string}
+              isCheckNickName={dataCategory.isCheckNickname}
             />
 
             <ProductsOrder products={data.data.data} />
@@ -94,7 +94,7 @@ export default function OrderLayout() {
 
           {/* Desktop Layout */}
           <div className="hidden lg:grid lg:grid-cols-12 gap-6 xl:gap-8">
-            {/* Left Column - Info Only (No Cart) */}
+            {/* Left Column - Cart + Header + Order Information */}
             <div className="lg:col-span-4 xl:col-span-3">
               <div className="sticky top-4 space-y-4">
                 <HeaderOrder
@@ -107,26 +107,20 @@ export default function OrderLayout() {
                 <OrderInformation
                   inf={dataCategory.categoryInformation as string}
                 />
+                <Cart />
               </div>
             </div>
 
-            {/* Middle Column - Main Content */}
-            <div className="lg:col-span-5 xl:col-span-6 space-y-6">
-              <PlaceHolderInput 
-                brand={slug as string} 
-                isCheckNickName={dataCategory.isCheckNickname} 
+            {/* Right Column - Main Content */}
+            <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+              <PlaceHolderInput
+                brand={slug as string}
+                isCheckNickName={dataCategory.isCheckNickname}
               />
 
               <ProductsOrder products={data.data.data} />
 
               <MethodSection />
-            </div>
-
-            {/* Right Column - Sticky Cart */}
-            <div className="lg:col-span-3 xl:col-span-3">
-              <div className="sticky top-4">
-                <Cart />
-              </div>
             </div>
           </div>
         </section>

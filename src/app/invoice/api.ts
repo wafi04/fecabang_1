@@ -12,7 +12,7 @@ interface InvoiceData {
   product_name: string;
   reference_id: string;
   status: string;
-  total: string;
+  total: number;
   tujuan: string;
 }
 

@@ -49,14 +49,6 @@ export function HeaderOrder({
         </h1>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-sm text-gray-600 truncate">{subName}</span>
-          {brand && (
-            <>
-              <span className="text-gray-300">•</span>
-              <span className="text-sm text-blue-600 font-semibold px-2 py-1 bg-blue-50 rounded-md">
-                {brand}
-              </span>
-            </>
-          )}
         </div>
       </div>
     </div>
