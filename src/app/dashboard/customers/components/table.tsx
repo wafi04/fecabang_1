@@ -1,15 +1,8 @@
 import { UserData } from "@/shared/types/user";
+import { formatDate } from "@/shared/utils/format";
 
 export function TableCustomers({ data }: { data: UserData[] }) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+ 
 
   return (
     <div className="overflow-x-auto">

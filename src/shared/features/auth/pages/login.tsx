@@ -7,6 +7,7 @@ import { LoginFormData, sanitizeInput } from "@/shared/schemas/auth";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useLoginMutation } from "../hooks/api";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -60,10 +61,11 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Email Field */}
         <div className="grid gap-2">
-          <Label htmlFor="username">Username</Label>
+          <Label htmlFor="username" className="text-purple-200/90">Username</Label>
           <Input
             id="username"
             type="text"
+            className="text-white"
             placeholder="Masukkan username"
             {...register("username", {
               required: "Username is required",
@@ -91,19 +93,21 @@ export default function LoginPage() {
         {/* Password Field */}
         <div className="grid gap-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <a
+            <Label htmlFor="password" className="text-purple-200/90">Password</Label>
+            <Link
               href="/forgot-password"
-              className="text-sm text-primary underline-offset-4 hover:underline"
+              className="text-sm text-purple-200/90 underline-offset-4 hover:underline"
             >
               Forgot password?
-            </a>
+            </Link>
           </div>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
+                          className="text-white"
+
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -140,7 +144,7 @@ export default function LoginPage() {
         {/* Submit Button */}
         <Button
           type="submit"
-          className="w-full"
+          className="w-full bg-purple-700  hover:bg-purple-800"
           disabled={!isValid || isPending}
         >
           {isPending ? (
@@ -154,11 +158,11 @@ export default function LoginPage() {
         </Button>
 
         {/* Optional: Sign up link */}
-        <div className="text-center text-sm text-gray-500">
-          Don&lsquo;t have an account?{" "}
-          <a href="/register" className="text-primary hover:underline">
-            Sign up
-          </a>
+        <div className="text-center text-sm text-purple-100/40">
+          Belum Punya Akun?{" "}
+          <Link href="/register" className="text-purple-500/70 underline">
+            Daftar
+          </Link>
         </div>
       </form>
     </AuthPage>

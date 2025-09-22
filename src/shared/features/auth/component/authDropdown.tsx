@@ -105,17 +105,17 @@ export function AuthDropdown() {
               <UserCircle className="h-4 w-4 mr-3 text-muted-foreground" />
               View Profile
             </button>
-
-            {isAvailable.includes(user.role_name) && (
-              <button
-                onClick={() => push("/dashboard")}
-                className="w-full flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <LayoutDashboard className="h-4 w-4 mr-3 text-muted-foreground" />
-                Dashboard
-              </button>
-            )}
-
+            <div className="border-t border-border">
+              {isAvailable.includes(user.role_name) && (
+                <button
+                  onClick={() => push("/dashboard")}
+                  className="w-full flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-3 text-muted-foreground" />
+                  Dashboard
+                </button>
+              )}
+            </div>
             {/* Logout Section */}
             <div className="border-t border-border">
               <button

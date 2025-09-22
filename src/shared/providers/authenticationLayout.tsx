@@ -13,7 +13,9 @@ export function AuthenticationLayout({ children }: WithChildren) {
       {websettinggsData && (
         <>
           <Navbar data={websettinggsData} />
-          {children}
+          <main className="min-h-screen w-full h-full">
+            {children}
+            </main> 
           <Footer data={websettinggsData} />
         </>
       )}

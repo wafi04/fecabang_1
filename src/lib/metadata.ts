@@ -44,12 +44,12 @@ export class MetadataService {
         "website",
         "business",
       ],
-
+      
       metadataBase: new URL(this.baseUrl),
 
       openGraph: {
         type: "website",
-        locale: "en_US",
+        locale: "id_ID",
         url: this.baseUrl,
         siteName: settings?.website_name || "My Website",
         title: settings?.website_name || "My Website",

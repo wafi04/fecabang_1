@@ -12,12 +12,26 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export interface TransactionResponse {
   status: string;
-  referenceID: string;
+  referenceId: string;
   productName: string;
   fee: number;
   methodName: string;
   no_tujuan: string;
   nickname: string;
+}
+
+export interface TransactionUserResponse {
+  created_at: string;
+  fee: number;
+  id: number;
+  payment_name: string;
+  price: number;
+  product_name: string;
+  reference_id: string;
+  status: string;
+  total: number;
+  tujuan: string;
+  updated_at: string;
 }
 
 export function useGetAllTransactions(filters: FilterRequest) {
@@ -82,6 +96,37 @@ export function useGetTransactions({ filters }: { filters?: FilterRequest }) {
 
       const req = await api.get<ApiPagination<TransactionResponse[]>>(
         "/trxreseller?" + params.toString()
+      );
+      return req.data;
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+  });
+
+  return {
+    data,
+    isLoading,
+    error,
+  };
+}
+
+export function useGettransactionsResellerUser({
+  filters,
+}: {
+  filters?: FilterRequest;
+}) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["order-users", filters],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+
+      if (filters?.limit) params.append("limit", filters.limit);
+      if (filters?.page) params.append("offset", filters.page);
+      if (filters?.search) params.append("search", filters.search);
+      if (filters?.status) params.append("status", filters.status);
+
+      const req = await api.get<ApiPagination<TransactionUserResponse[]>>(
+        "/trxreseller/user?" + params.toString()
       );
       return req.data;
     },
