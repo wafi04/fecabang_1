@@ -1,59 +1,50 @@
-import { NextRequest, NextResponse } from "next/server";
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 
-function decodeJWT(token: string) {
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload;
-  } catch {
-    return null;
-  }
-}
+const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
-function isTokenExpired(token: string): boolean {
-  const payload = decodeJWT(token);
-  if (!payload || !payload.exp) return true;
+// Define public routes that don't require authentication.
+const publicRoutes = ["/login", "/register", "/forgot-password"];
 
-  return Date.now() >= payload.exp * 1000;
-}
+const adminRoutes = ["/dashboard"];
 
-export default async function middleware(request: NextRequest) {
-  const token = request.cookies.get("auth_token")?.value;
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const authToken = request.cookies.get("auth_token")?.value;
 
-  const publicRoutes = ["/login", "/register"];
-  const isPublicRoute = publicRoutes.includes(pathname);
-
-  if (pathname === "/") {
-    if (token && !isTokenExpired(token)) {
-      return NextResponse.redirect(new URL("/home", request.url));
-    } else {
-      const response = NextResponse.redirect(new URL("/login", request.url));
-      if (token && isTokenExpired(token)) {
-        response.cookies.delete("auth_token");
-      }
-      return response;
-    }
-  }
-
-  if (isPublicRoute && token && !isTokenExpired(token)) {
-    return NextResponse.redirect(new URL("/home", request.url));
-  }
-
-  if (!isPublicRoute) {
-    if (!token) {
+  if (!authToken) {
+    if (!publicRoutes.includes(pathname)) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-
-    if (isTokenExpired(token)) {
-      const response = NextResponse.redirect(new URL("/login", request.url));
-      response.cookies.delete("auth_token");
-      return response;
-    }
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  // 2. Validate the token and check the role for protected routes.
+  try {
+    const { payload } = await jwtVerify(authToken, secretKey);
+    const roleID = payload.roleID as number; // Assuming your roleID is a number
+
+    // Check if the route is an admin route.
+    const isAdminRoute = adminRoutes.some((route) =>
+      pathname.startsWith(route.replace(":path*", ""))
+    );
+
+    if (isAdminRoute && roleID !== 1) {
+      return NextResponse.redirect(new URL("/403", request.url)); // Forbidden page
+    }
+
+    // Allow access if the token is valid and permissions are correct.
+    return NextResponse.next();
+  } catch (err) {
+    // If the token is invalid or expired, redirect to the login page.
+    console.error("Token validation error:", err);
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 }
 
 export const config = {
+  // Apply middleware to all routes except API, static files, etc.
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

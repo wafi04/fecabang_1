@@ -28,7 +28,6 @@ export async function CheckNickName({
       gameId
     )}&server=${serverId}`;
   } else if (type === 'genshin-impact') {
-    console.log(gameId);
     url = `${BASE_URL_VALIDATE_NICKNAME}/gi?id=${gameId}`;
   } else if (type === 'honkai-star-rail') {
     url = `${BASE_URL_VALIDATE_NICKNAME}/hsr?id=${parseInt(gameId)}`;

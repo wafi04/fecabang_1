@@ -26,7 +26,6 @@ export function DialogUpdateImage({
   className?: string;
 }) {
   function handleUpdate() {
-    console.log("Update image clicked!");
   }
 
   return (

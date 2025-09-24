@@ -82,7 +82,6 @@ export function LeaderboardTransaksi() {
   }
 
   const leaderboard = data?.data;
-  console.log(data,"leaderboard")
   return (
     <main className="relative">
       <section className="relative pb-12 pt-24">

@@ -59,7 +59,6 @@ export const useLoginMutation = () => {
     mutationKey: ["login"],
     mutationFn: async (data: LoginFormData) => {
       const res = await api.post("/auth/login", data);
-      console.log(res)
       return res.data
     },
     onError: (error: ErrorResponse) => {

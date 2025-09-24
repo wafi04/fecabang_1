@@ -32,7 +32,6 @@ export function useGetResellerPricing(filters?: FilterRequest) {
         const response = await api.get<ApiPagination<ProductReseller[]>>(
           `/reseller/product?${searchParams.toString()}`
         );
-        console.log(response)
         return response.data;
       } catch (error) {
         throw error;
@@ -59,7 +58,6 @@ export function useUpdateResellerPricing() {
     mutationKey: ["update-reseller-product"],
     mutationFn: async (data: UpdateProductReseller) => {
       const req = await api.patch(`/reseller/product/${data.id}`, data);
-      console.log(req)
       return req.data;
     },
     onSuccess: () => {
