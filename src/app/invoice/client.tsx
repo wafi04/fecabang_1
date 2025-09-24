@@ -77,7 +77,7 @@ export default function InvoicePage() {
     <Suspense fallback={<>...</>}>
       <AuthenticationLayout>
         <main className="container px-4 mt-20 mb-10 min-h-screen">
-          <Steps />
+          <Steps status={invoice.status}/>
           <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Product & Payment Details */}
             <div className="space-y-6">

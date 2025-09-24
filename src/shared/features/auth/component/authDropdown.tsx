@@ -10,9 +10,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useHandleLogout } from "../hooks/api";
+import { useAuthQuery } from "@/shared/hooks/useAuthQuery";
 
 export function AuthDropdown() {
-  const { user } = useAuthStore();
+  const { data  } = useAuthQuery();
   const { mutate: logout } = useHandleLogout();
   const [isOpen, setIsOpen] = useState(false);
   const { push } = useRouter();
@@ -20,6 +21,9 @@ export function AuthDropdown() {
     logout();
     setIsOpen(false);
   };
+
+  const user = data?.data
+
   const isAvailable = ["admin", "reseller"];
 
   if (!user) {

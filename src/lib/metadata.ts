@@ -14,7 +14,6 @@ export class MetadataService {
           branchname: process.env.NEXT_PUBLIC_BRANCH_NAME!,
           branchcode: process.env.NEXT_PUBLIC_BRANCH_CODE!,
         },
-        cache: "force-cache",
         next: {
           revalidate: 3600,
           tags: ["web-settings"],

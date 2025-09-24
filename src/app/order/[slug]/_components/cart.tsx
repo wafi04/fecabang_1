@@ -50,7 +50,10 @@ export function Cart() {
     </div>
     {
         showDialog && transactionResult && (
-            <DialogValidateTransactions transactionData={transactionResult} isOpen={showDialog} onClose={closeDialog}/>
+            <DialogValidateTransactions transactionData={{
+              ...transactionResult,
+              referenceID : transactionResult.referenceID
+            }} isOpen={showDialog} onClose={closeDialog}/>
         )
     }
     </>

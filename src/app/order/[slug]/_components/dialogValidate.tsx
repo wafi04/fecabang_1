@@ -12,7 +12,7 @@ interface DialogValidateTransactionsProps {
   onClose: () => void;
   transactionData?: {
     status: string;
-    referenceId: string;
+    referenceID: string;
     productName: string;
     fee: number;
     methodName: string;
@@ -88,7 +88,7 @@ export function DialogValidateTransactions({
     tujuan: transactionData?.no_tujuan || "-",
     product: getOrderSummary()?.product.name || "-",
     payment: getOrderSummary()?.paymentMethod.name || "-",
-    referenceId: transactionData?.referenceId || "-",
+    referenceId: transactionData?.referenceID || "-",
     status: transactionData?.status || "pending",
     fee: transactionData?.fee || calculation?.fee || 0,
     total: getOrderSummary()?.calculation.total || 0,
@@ -200,7 +200,7 @@ export function DialogValidateTransactions({
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-secondary-foreground shadow-sm hover:bg-secondary/80 "
                     onClick={() => {
-                      push(`/invoice/${transactionData.referenceId}`);
+                      push(`/invoice/${transactionData.referenceID}`);
                     }}
                   >
                     Bayar Sekarang

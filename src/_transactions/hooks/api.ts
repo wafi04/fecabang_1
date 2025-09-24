@@ -12,7 +12,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export interface TransactionResponse {
   status: string;
-  referenceId: string;
+  referenceID: string;
   productName: string;
   fee: number;
   methodName: string;
