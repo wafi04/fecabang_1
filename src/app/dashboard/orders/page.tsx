@@ -36,8 +36,8 @@ export default function OrdersPage() {
     page: currentPage.toString(),
     search: searchTerm,
     status: statusFilter,
-    start_date: startDate ? startDate.toISOString() : "",
-    end_date: endDate ? endDate.toISOString() : "",
+    start_date: startDate ? startDate.toISOString().split("T")[0] : "",
+    end_date: endDate ? endDate.toISOString().split("T")[0] : "",
   });
 
   return (

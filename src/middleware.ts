@@ -6,7 +6,7 @@ import { jwtVerify } from "jose";
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
 // Define public routes that don't require authentication.
-const publicRoutes = ["/login", "/register", "/forgot-password"];
+const publicRoutes = ["/login", "/register", "/forgot-password","/"];
 
 const adminRoutes = ["/dashboard"];
 
@@ -26,16 +26,14 @@ export async function middleware(request: NextRequest) {
     const { payload } = await jwtVerify(authToken, secretKey);
     const roleID = payload.roleID as number; // Assuming your roleID is a number
 
-    // Check if the route is an admin route.
     const isAdminRoute = adminRoutes.some((route) =>
       pathname.startsWith(route.replace(":path*", ""))
     );
 
-    if (isAdminRoute && roleID !== 1) {
-      return NextResponse.redirect(new URL("/403", request.url)); // Forbidden page
+    if (isAdminRoute && roleID !== 2) {
+      return NextResponse.redirect(new URL("/login", request.url)); 
     }
 
-    // Allow access if the token is valid and permissions are correct.
     return NextResponse.next();
   } catch (err) {
     // If the token is invalid or expired, redirect to the login page.

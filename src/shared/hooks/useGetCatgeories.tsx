@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export function useGetAllSubCategory(filters?: FilterRequest) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["subcategories", filters],
+    queryKey: ["categories", filters],
     queryFn: async () => {
       const params = new URLSearchParams();
 
@@ -13,7 +13,7 @@ export function useGetAllSubCategory(filters?: FilterRequest) {
       if (filters?.page) params.append("page", filters.page);
       if (filters?.search) params.append("search", filters.search);
       const data = await api.get<ApiPagination<SubCategory[]>>(
-        `/category?${params.toString()}`
+        `/categories?${params.toString()}`
       );
       return data.data;
     },

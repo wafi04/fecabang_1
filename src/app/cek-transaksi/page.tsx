@@ -223,7 +223,7 @@ export default function CheckTransactionPage() {
                   <tbody className=" divide-y divide-gray-200">
                     {data.data.data.map((transaction, index) => (
                       <tr
-                        key={transaction.referenceId || index}
+                        key={index}
                         className="hover:bg-gray-50 transition-colors"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">

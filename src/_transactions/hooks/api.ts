@@ -20,6 +20,16 @@ export interface TransactionResponse {
   nickname: string;
 }
 
+export interface TransactionResponseCheck {
+  status: string;
+  referenceId: string;
+  productName: string;
+  fee: number;
+  methodName: string;
+  no_tujuan: string;
+  nickname: string;
+}
+
 export interface TransactionUserResponse {
   created_at: string;
   fee: number;
@@ -94,7 +104,7 @@ export function useGetTransactions({ filters }: { filters?: FilterRequest }) {
       if (filters?.search) params.append("search", filters.search);
       if (filters?.status) params.append("status", filters.status);
 
-      const req = await api.get<ApiPagination<TransactionResponse[]>>(
+      const req = await api.get<ApiPagination<TransactionResponseCheck[]>>(
         "/trxreseller?" + params.toString()
       );
       return req.data;

@@ -3,14 +3,14 @@ import { WebSettings } from "@/shared/types/websettings";
 
 export class MetadataService {
   private static baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://yoursite.com";
+    process.env.NEXT_PUBLIC_SITE_URL || "https://cabang1.zilog.my.id";
   private static apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   static async fetchWebSettings(): Promise<WebSettings | null> {
     try {
       const response = await fetch(`${this.apiUrl}/websettings`, {
         headers: {
-          Origin: "http://localhost:3000",
+          Origin: "https://cabang1.zilog.my.id",
           branchname: process.env.NEXT_PUBLIC_BRANCH_NAME!,
           branchcode: process.env.NEXT_PUBLIC_BRANCH_CODE!,
         },
